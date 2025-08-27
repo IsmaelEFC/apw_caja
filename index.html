@@ -104,13 +104,51 @@
         // Registrar el Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
+                // Forzar actualización de la caché al cargar la página
+                if (window.location.search.includes('sw-update=true')) {
+                    console.log('Actualización forzada del Service Worker');
+                    navigator.serviceWorker.getRegistration().then(reg => {
+                        if (reg) {
+                            reg.unregister().then(() => {
+                                console.log('Service Worker desregistrado, recargando...');
+                                window.location.href = window.location.pathname;
+                            });
+                        }
+                    });
+                }
+
+                // Registrar el Service Worker
                 navigator.serviceWorker.register('./sw.js')
                     .then(registration => {
                         console.log('ServiceWorker registrado con éxito:', registration.scope);
+                        
+                        // Verificar actualizaciones
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('Nueva versión disponible. Recargando...');
+                                    window.location.reload();
+                                }
+                            });
+                        });
+                        
+                        // Forzar actualización cada 1 hora
+                        setInterval(() => {
+                            registration.update().catch(err => 
+                                console.log('Error al actualizar el Service Worker:', err)
+                            );
+                        }, 60 * 60 * 1000);
                     })
                     .catch(error => {
-                        console.log('Error al registrar el ServiceWorker:', error);
+                        console.error('Error al registrar el ServiceWorker:', error);
                     });
+            });
+            
+            // Escuchar mensajes del Service Worker
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('Nuevo Service Worker tomando el control');
+                window.location.reload();
             });
         }
     </script>

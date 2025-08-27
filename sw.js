@@ -1,4 +1,7 @@
-const CACHE_NAME = 'el-campeon-v1';
+// Incrementar el número de versión para forzar la actualización
+const CACHE_VERSION = 'v2';
+const CACHE_NAME = `el-campeon-${CACHE_VERSION}`;
+
 const urlsToCache = [
     './',
     './index.html',
@@ -11,15 +14,23 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+    // Evita que el service worker complete la instalación hasta que se complete el caché
     event.waitUntil(
         caches.open(CACHE_NAME)
         .then(cache => {
-            console.log('Cache abierto');
-            return cache.addAll(urlsToCache);
+            console.log(`Cache ${CACHE_NAME} abierto`);
+            return cache.addAll(urlsToCache)
+                .then(() => {
+                    console.log('Todos los recursos han sido cacheados exitosamente');
+                    // Activa el nuevo service worker inmediatamente
+                    return self.skipWaiting();
+                })
+                .catch(error => {
+                    console.error('Error al guardar en caché:', error);
+                    throw error;
+                });
         })
     );
-    // Activa el service worker inmediatamente
-    self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -28,16 +39,21 @@ self.addEventListener('activate', event => {
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cache => {
-                    if (cache !== CACHE_NAME) {
+                    if (cache !== CACHE_NAME && cache.startsWith('el-campeon-')) {
                         console.log('Eliminando cache antigua:', cache);
                         return caches.delete(cache);
                     }
                 })
-            );
+            ).then(() => {
+                // Reclama el control de todos los clientes (páginas abiertas)
+                console.log('Reclamando control de los clientes');
+                return self.clients.claim();
+            });
         })
     );
-    // Reclama el control de la página inmediatamente
-    event.waitUntil(clients.claim());
+    
+    // Forzar la actualización inmediata
+    self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
