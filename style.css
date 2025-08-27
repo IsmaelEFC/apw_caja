@@ -590,28 +590,43 @@ main {
 
 /* Estilos para optimizar la impresión en PDF */
 .pdf-export-mode {
-    background-color: #fff; /* Fondo blanco para imprimir */
-    color: #000; /* Texto negro para mejor contraste */
-    padding: 20px;
+    background-color: #fff !important; /* Fondo blanco para imprimir */
+    color: #000 !important; /* Texto negro para mejor contraste */
+    padding: 20px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
 }
 
 .pdf-export-mode h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
+    font-size: 24px !important;
+    margin-bottom: 10px !important;
 }
 
 .pdf-export-mode p,
 .pdf-export-mode li {
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
 }
 
 .pdf-export-mode ul {
-    list-style: none; /* Elimina los puntos si los hay */
-    padding: 0;
+    list-style: none !important; /* Elimina los puntos si los hay */
+    padding: 0 !important;
 }
 
-.pdf-export-mode li span {
-    display: block; /* Asegura que cada línea ocupe todo el ancho */
-    margin-bottom: 5px;
+.pdf-export-mode li {
+    display: flex !important; /* Asegura que cada línea ocupe todo el ancho */
+    justify-content: space-between !important;
+    margin-bottom: 5px !important;
+    padding: 2px 0 !important;
+    border-bottom: 1px dashed #eee !important;
+}
+
+/* IMPORTANTE: Ajuste para el contenido del modal cuando se exporta a PDF */
+#modal-detalle .modal-content.pdf-export-mode {
+    max-height: none !important; /* Elimina la altura máxima para que html2canvas capture todo */
+    overflow: visible !important; /* Evita scrolls internos que html2canvas no captura bien */
+    width: auto !important; /* Ajusta el ancho al contenido si es necesario */
+    height: auto !important; /* Ajusta la altura al contenido */
+    display: block !important; /* Asegura que no haya flexbox o grid problemáticos en el modal para la captura */
 }

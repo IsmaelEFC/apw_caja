@@ -339,44 +339,70 @@ function prepararCierreDeCaja() {
 // Genera el reporte PDF y luego reinicia la caja
 async function generarPDFyReiniciar() {
     const { jsPDF } = window.jspdf;
-    const content = document.getElementById('reporte-pdf-content');
-
+    
     if (Object.keys(detalleVentas).length === 0) {
         alert('No hay ventas para generar un reporte. Reiniciando caja.');
         reiniciarCaja();
         return;
     }
 
-    // Antes de capturar, fuerza los estilos para que el PDF sea legible
-    content.classList.add('pdf-export-mode');
-
-    // Oculta el botón de cerrar para que no aparezca en el PDF
-    document.querySelector('.close-button[data-modal="modal-detalle"]').style.display = 'none';
-    
-    // Genera el PDF usando html2canvas para capturar el contenido
-    const canvas = await html2canvas(content, { scale: 2 }); // Escala 2 para mejor resolución
-    const imgData = canvas.toDataURL('image/png');
-    
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    let y = 15; // Posición vertical inicial
     
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    
-    // Quita los estilos forzados y vuelve a mostrar el botón
-    content.classList.remove('pdf-export-mode');
-    document.querySelector('.close-button[data-modal="modal-detalle"]').style.display = 'block';
+    // --- Título del Reporte ---
+    pdf.setFontSize(22);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Reporte de Cierre de Caja', 105, y, null, null, 'center');
+    y += 10;
 
-    // Genera el nombre del archivo
+    // --- Totales ---
+    const totalGenerado = totalEfectivo + totalTransferencia;
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Total Generado: ${formatearPrecio(totalGenerado)}`, 15, y);
+    y += 7;
+    pdf.text(`Ventas Efectivo: ${formatearPrecio(totalEfectivo)}`, 15, y);
+    y += 7;
+    pdf.text(`Ventas Transferencia: ${formatearPrecio(totalTransferencia)}`, 15, y);
+    y += 15;
+
+    // --- Título de la lista de ventas ---
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Detalle de Ventas:', 15, y);
+    y += 8;
+
+    // --- Detalle de Ventas ---
+    const detalleArray = Object.keys(detalleVentas).map(key => ({
+        nombre: key,
+        ...detalleVentas[key]
+    }));
+    detalleArray.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'normal');
+
+    detalleArray.forEach(item => {
+        const precioUnitario = item.total / item.cantidad;
+        const linea = `${item.nombre} - ${item.cantidad} x ${formatearPrecio(precioUnitario)} = ${formatearPrecio(item.total)}`;
+        
+        // Salto de página si la línea no cabe
+        if (y > 280) {
+            pdf.addPage();
+            y = 15; // Restablecer la posición vertical
+        }
+        
+        pdf.text(linea, 15, y);
+        y += 7;
+    });
+
+    // --- Lógica para descargar o compartir el PDF ---
     const today = new Date().toISOString().slice(0, 10);
     const filename = `Reporte_Caja_${today}.pdf`;
 
-    // Lógica mejorada para detectar si es móvil y usar el método apropiado
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
     if (isMobile && navigator.share) {
-        // Opción de compartir para móviles, si está disponible
         try {
             const pdfBlob = pdf.output('blob');
             await navigator.share({
@@ -387,8 +413,14 @@ async function generarPDFyReiniciar() {
             reiniciarCaja();
         } catch (error) {
             console.error('Error al compartir:', error);
-            alert('No se pudo compartir. Se procederá a la descarga.');
-            pdf.save(filename); // Fallback de descarga si la compartición falla
+            // Fallback de descarga si la compartición falla
+            const pdfBlob = pdf.output('blob');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(pdfBlob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
             reiniciarCaja();
         }
     } else {
