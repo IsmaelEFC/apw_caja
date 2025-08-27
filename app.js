@@ -398,12 +398,15 @@ async function generarPDFyReiniciar() {
 
 // Reinicia los totales para el cierre de caja (función de reinicio real)
 function reiniciarCaja() {
-    totalEfectivo = 0;
-    totalTransferencia = 0;
-    detalleVentas = {};
-    actualizarResumen();
-    cerrarModal(modalDetalle);
-    alert('Caja reiniciada. ¡Día cerrado!');
+    // Agrega una confirmación para evitar borrados accidentales
+    if (confirm('¿Estás seguro de que quieres reiniciar la caja? Esta acción eliminará los totales y el detalle de ventas del día.')) {
+        totalEfectivo = 0;
+        totalTransferencia = 0;
+        detalleVentas = {};
+        actualizarResumen();
+        cerrarModal(modalDetalle);
+        alert('Caja reiniciada. ¡Día cerrado!');
+    }
 }
 
 function mostrarDetalle() {
@@ -484,7 +487,7 @@ function registrarServiceWorker() {
 document.addEventListener('DOMContentLoaded', inicializarApp);
 pagoEfectivoBtn.addEventListener('click', () => registrarVenta('efectivo'));
 pagoTransferenciaBtn.addEventListener('click', () => registrarVenta('transferencia'));
-reiniciarDiaBtn.addEventListener('click', prepararCierreDeCaja);
+reiniciarDiaBtn.addEventListener('click', reiniciarCaja);
 verTotalDetalleBtn.addEventListener('click', mostrarDetalle);
 generarPdfBtn.addEventListener('click', generarPDFyReiniciar); // Nuevo event listener
 agregarProductoBtn.addEventListener('click', abrirModalAgregarProducto);
