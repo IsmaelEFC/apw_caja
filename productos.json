@@ -1,0 +1,93 @@
+{
+  "categorias": [
+    {
+      "nombre": "Completos",
+      "productos": [
+        { "nombre": "Completo", "precio": 2000 },
+        { "nombre": "Italiano", "precio": 2500 },
+        { "nombre": "Dinamico", "precio": 2500 },
+        { "nombre": "Papapleto", "precio": 2500 }
+      ]
+    },
+    {
+      "nombre": "As",
+      "productos": [
+        { "nombre": "Italiano", "precio": 3000 },
+        { "nombre": "Queso", "precio": 3500 },
+        { "nombre": "Italiano Queso", "precio": 3500 }
+      ]
+    },
+    {
+      "nombre": "Salchipapa",
+      "productos": [
+        { "nombre": "Salchi papa", "precio": 2500 }
+      ]
+    },
+    {
+      "nombre": "Acompañamientos",
+      "productos": [
+        { "nombre": "Papas Fritas", "precio": 2000 },
+        { "nombre": "Chorrillana", "precio": 8000 }
+      ]
+    },
+    {
+      "nombre": "Supremas",
+      "productos": [
+        { "nombre": "Suprema Carne", "precio": 7000 },
+        { "nombre": "Suprema Camarón", "precio": 8000 },
+        { "nombre": "Suprema Mixta", "precio": 10000 }
+      ]
+    },
+    {
+      "nombre": "Empanadas",
+      "productos": [
+        { "nombre": "Queso", "precio": 2500 },
+        { "nombre": "Queso Camarón", "precio": 3000 },
+        { "nombre": "Pollo Queso", "precio": 2500 }
+      ]
+    },
+    {
+      "nombre": "Pizzas",
+      "productos": [
+        { "nombre": "Pizza", "precio": 2500 }
+      ]
+    },
+    {
+      "nombre": "Pollo",
+      "productos": [
+        { "nombre": "Pollo Crispy", "precio": 4500 }
+      ]
+    },
+    {
+      "nombre": "Hamburguesas",
+      "productos": [
+        { "nombre": "Luco", "precio": 4500 },
+        { "nombre": "Italiana", "precio": 4500 },
+        { "nombre": "Chacarera", "precio": 4500 },
+        { "nombre": "Campeona", "precio": 4500 },
+        { "nombre": "Chimilico", "precio": 4500 },
+        { "nombre": "Brasileño", "precio": 4500 },
+        { "nombre": "Sándwich de Pollo", "precio": 4500 }
+      ]
+    },
+    {
+      "nombre": "Churrascos",
+      "productos": [
+        { "nombre": "Campeona", "precio": 4500 },
+        { "nombre": "Italiana", "precio": 4500 },
+        { "nombre": "Chacarera", "precio": 4500 },
+        { "nombre": "Chimilico", "precio": 4500 },
+        { "nombre": "Luco", "precio": 4500 },
+        { "nombre": "Brasileño", "precio": 4500 }
+      ]
+    },
+    {
+      "nombre": "Bebidas",
+      "productos": [
+        { "nombre": "Bebida", "precio": 1000 },
+        { "nombre": "Té", "precio": 600 },
+        { "nombre": "Café", "precio": 800 }
+      ]
+    }
+  ]
+}

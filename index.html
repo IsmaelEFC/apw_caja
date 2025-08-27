@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Campeón - Punto de Venta</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#3498db">
+    <meta name="description" content="Sistema de punto de venta para El Campeón">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="El Campeón">
+    <meta name="application-name" content="El Campeón">
+    <meta name="theme-color" content="#3498db">
+</head>
+<body>
+    <header>
+        <h1>Control de Caja</h1>
+        <p>Hoy: <span id="fecha-actual"></span></p>
+    </header>
+
+    <main>
+        <section id="productos-section" class="card">
+            <h2>Seleccionar Producto</h2>
+            <div id="categorias-container">
+                <!-- Las categorías se generarán dinámicamente aquí -->
+            </div>
+            <button id="agregar-producto-btn" class="btn btn-secondary">Agregar Nuevo Producto</button>
+        </section>
+
+        <section id="resumen-section" class="card">
+            <h2>Resumen del Día</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span>Efectivo:</span>
+                    <span id="total-efectivo" class="valor">$0.00</span>
+                </div>
+                <div class="stat-item">
+                    <span>Transferencia:</span>
+                    <span id="total-transferencia" class="valor">$0.00</span>
+                </div>
+            </div>
+            <div class="button-group">
+                <button id="ver-total-detalle" class="btn btn-primary">Ver Total y Detalle</button>
+                <button id="reiniciar-dia" class="btn btn-danger">Cerrar y Reiniciar Caja</button>
+            </div>
+            <p class="note">Al reiniciar, los totales se guardan en el historial y se borran para el día siguiente.</p>
+        </section>
+    </main>
+
+    <div class="modal" id="modal-pago">
+        <div class="modal-content">
+            <span class="close-button" data-modal="modal-pago">&times;</span>
+            <h3>Total a Pagar: <span id="monto-modal" class="valor-modal">$0.00</span></h3>
+            <p>Seleccione el método de pago:</p>
+            <div class="metodos-pago">
+                <button id="pago-efectivo" class="btn btn-success">Efectivo</button>
+                <button id="pago-transferencia" class="btn btn-info">Transferencia</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-detalle">
+        <div class="modal-content" id="reporte-pdf-content">
+            <span class="close-button" data-modal="modal-detalle">&times;</span>
+            <h3>Resumen de Ventas</h3>
+            <div class="stats-grid-modal">
+                <div class="stat-item">
+                    <span>Total Generado:</span>
+                    <span id="total-generado" class="valor-modal">$0.00</span>
+                </div>
+            </div>
+            <h4>Detalle por Producto</h4>
+            <ul id="detalle-lista">
+                </ul>
+            <p class="note">Mostrando ventas actuales del día.</p>
+        </div>
+        <div class="modal-footer">
+            <button id="generar-pdf-btn" class="btn btn-primary">Descargar Reporte y Reiniciar</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-agregar-producto">
+        <div class="modal-content">
+            <span class="close-button" data-modal="modal-agregar-producto">&times;</span>
+            <h3>Nuevo Producto</h3>
+            <form id="form-nuevo-producto">
+                <div class="form-group">
+                    <label for="nombre-producto">Nombre:</label>
+                    <input type="text" id="nombre-producto" required>
+                </div>
+                <div class="form-group">
+                    <label for="precio-producto">Precio:</label>
+                    <input type="number" id="precio-producto" step="0.01" min="0" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Producto</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // Registrar el Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registrado con éxito:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Error al registrar el ServiceWorker:', error);
+                    });
+            });
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
