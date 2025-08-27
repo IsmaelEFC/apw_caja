@@ -489,6 +489,9 @@ main {
     margin-bottom: 3px; /* Espacio entre nombre y detalles en móvil */
 }
 @media (prefers-color-scheme: dark) {
+    .pdf-export-mode #detalle-lista li span:first-child {
+        color: var(--text-light); /* Fuerza el color claro para el PDF */
+    }
     #detalle-lista li span:first-child {
         color: var(--text-dark);
     }
@@ -496,12 +499,6 @@ main {
         background-color: #3a404b;
         border-color: var(--border-dark);
     }
-}
-
-#detalle-lista li span:last-child {
-    color: var(--success-color);
-    font-weight: bold;
-    font-size: 0.95em;
 }
 
 /* --- Formulario --- */
@@ -563,4 +560,30 @@ main {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* Clases para generar un PDF legible */
+.pdf-export-mode {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.pdf-export-mode .modal-content {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+.pdf-export-mode .note {
+    color: #555555 !important;
+    border-top-color: #dddddd !important;
+}
+
+.pdf-export-mode h3,
+.pdf-export-mode h4,
+.pdf-export-mode .valor-modal,
+.pdf-export-mode .stat-item span,
+.pdf-export-mode #detalle-lista li span {
+    color: #000000 !important;
 }
