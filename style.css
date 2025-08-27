@@ -99,7 +99,65 @@ main {
     overflow: hidden;
 }
 
+/* Mobile-specific styles */
 @media (max-width: 768px) {
+    main {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 120px); /* Adjust based on your header height */
+        overflow: hidden;
+    }
+
+    #productos-section {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 0.5rem;
+    }
+
+    #resumen-section {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: 0;
+        border-radius: 0;
+        border-top: 2px solid var(--border-light);
+        padding: 1rem;
+        z-index: 100;
+        background-color: var(--bg-light);
+    }
+
+    .stats-grid {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    .stat-item {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem;
+        background-color: var(--card-bg-light);
+        border-radius: var(--border-radius);
+    }
+
+    .button-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .button-group .btn {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .note {
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
     main {
         grid-template-columns: 1fr;
         padding: 10px;

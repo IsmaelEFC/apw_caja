@@ -30,13 +30,41 @@ const precioProductoInput = document.getElementById('precio-producto');
 // --- FUNCIONES ---
 
 async function inicializarApp() {
-    const hoy = new Date();
-    const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    fechaActualSpan.textContent = hoy.toLocaleDateString('es-CL', opcionesFecha);
-    await cargarProductos();
-    generarBotonesProductos();
-    actualizarResumen();
-    registrarServiceWorker();
+    try {
+        console.log('Inicializando aplicación...');
+        
+        // Configurar la fecha actual
+        const hoy = new Date();
+        const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        if (fechaActualSpan) {
+            fechaActualSpan.textContent = hoy.toLocaleDateString('es-CL', opcionesFecha);
+        } else {
+            console.error('Elemento fechaActualSpan no encontrado en el DOM');
+        }
+        
+        // Cargar productos
+        await cargarProductos();
+        
+        // Generar botones de productos
+        generarBotonesProductos();
+        
+        // Cargar totales desde localStorage
+        const savedEfectivo = parseFloat(localStorage.getItem('totalEfectivo')) || 0;
+        const savedTransferencia = parseFloat(localStorage.getItem('totalTransferencia')) || 0;
+        const savedDetalle = JSON.parse(localStorage.getItem('detalleVentas') || '{}');
+        
+        // Actualizar variables globales
+        totalEfectivo = savedEfectivo;
+        totalTransferencia = savedTransferencia;
+        detalleVentas = savedDetalle;
+        
+        // Actualizar la interfaz
+        actualizarResumen();
+        
+        console.log('Aplicación inicializada correctamente');
+    } catch (error) {
+        console.error('Error al inicializar la aplicación:', error);
+    }
 }
 
 async function cargarProductos() {
@@ -246,12 +274,29 @@ function formatearPrecio(monto) {
 }
 
 function actualizarResumen() {
-    totalEfectivoSpan.textContent = formatearPrecio(totalEfectivo);
-    totalTransferenciaSpan.textContent = formatearPrecio(totalTransferencia);
-    localStorage.setItem('totalEfectivo', totalEfectivo);
-    localStorage.setItem('totalTransferencia', totalTransferencia);
-    localStorage.setItem('detalleVentas', JSON.stringify(detalleVentas));
-    localStorage.setItem('productos', JSON.stringify(productos));
+    try {
+        console.log('Actualizando resumen...', { totalEfectivo, totalTransferencia });
+        
+        // Asegurarse de que los elementos del DOM existen
+        if (!totalEfectivoSpan || !totalTransferenciaSpan) {
+            console.error('Elementos del resumen no encontrados en el DOM');
+            return;
+        }
+        
+        // Formatear y mostrar los totales
+        totalEfectivoSpan.textContent = formatearPrecio(totalEfectivo || 0);
+        totalTransferenciaSpan.textContent = formatearPrecio(totalTransferencia || 0);
+        
+        // Guardar en localStorage
+        localStorage.setItem('totalEfectivo', totalEfectivo);
+        localStorage.setItem('totalTransferencia', totalTransferencia);
+        localStorage.setItem('detalleVentas', JSON.stringify(detalleVentas || {}));
+        localStorage.setItem('productos', JSON.stringify(productos || []));
+        
+        console.log('Resumen actualizado correctamente');
+    } catch (error) {
+        console.error('Error al actualizar el resumen:', error);
+    }
 }
 
 function registrarVenta(metodo) {
