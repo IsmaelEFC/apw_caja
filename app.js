@@ -40,63 +40,91 @@ async function inicializarApp() {
 }
 
 async function cargarProductos() {
-    const productosGuardados = localStorage.getItem('productos');
-    if (productosGuardados) {
-        // Si hay productos guardados, cargarlos
-        const data = JSON.parse(productosGuardados);
-        // Verificar si es la estructura plana antigua o la nueva con categorías
-        if (Array.isArray(data)) {
-            // Convertir estructura plana a estructura de categorías
-            const categorias = {};
-            data.forEach(producto => {
-                if (!categorias[producto.categoria]) {
-                    categorias[producto.categoria] = [];
-                }
-                categorias[producto.categoria].push({
-                    nombre: producto.nombre,
-                    precio: producto.precio
-                });
-            });
-            // Convertir a la estructura esperada
-            productos = Object.entries(categorias).map(([nombre, productosCategoria]) => ({
-                nombre,
-                productos: productosCategoria
-            }));
-        } else if (data.categorias) {
-            // Ya está en el formato de categorías
-            productos = data.categorias;
-        }
-    } else {
-        try {
-            // Cargar desde el archivo productos.json
-            const response = await fetch('productos.json');
-            if (!response.ok) {
-                throw new Error('No se pudo cargar el archivo productos.json');
-            }
+    try {
+        // Primero intentar cargar desde el archivo JSON
+        const response = await fetch('./productos.json');
+        if (response.ok) {
             const data = await response.json();
-            if (data.categorias) {
+            // Verificar si la estructura tiene categorías
+            if (data.categorias && Array.isArray(data.categorias)) {
                 productos = data.categorias;
-            } else {
-                // Si el archivo no tiene la estructura esperada, usar una estructura por defecto
-                productos = [{
-                    nombre: 'Sin Categoría',
-                    productos: Array.isArray(data) ? data : []
-                }];
+                // Guardar en localStorage para uso posterior
+                localStorage.setItem('productos', JSON.stringify({ categorias: data.categorias }));
+                return;
+            } else if (Array.isArray(data)) {
+                // Si es un array plano, convertirlo a estructura de categorías
+                const categorias = {};
+                data.forEach(producto => {
+                    const categoria = producto.categoria || 'General';
+                    if (!categorias[categoria]) {
+                        categorias[categoria] = [];
+                    }
+                    categorias[categoria].push({
+                        nombre: producto.nombre,
+                        precio: Number(producto.precio) || 0
+                    });
+                });
+                
+                productos = Object.entries(categorias).map(([nombre, productosCategoria]) => ({
+                    nombre,
+                    productos: productosCategoria
+                }));
+                
+                // Guardar la estructura convertida en localStorage
+                localStorage.setItem('productos', JSON.stringify({ categorias: productos }));
+                return;
             }
-        } catch (error) {
-            console.error(error);
-            alert('Error al cargar la lista de productos inicial. Revisa el archivo productos.json.');
-            // Estructura por defecto en caso de error
-            productos = [{
-                nombre: 'Productos',
-                productos: []
-            }];
         }
+    } catch (error) {
+        console.error('Error al cargar productos.json:', error);
     }
     
-    // Guardar la estructura actualizada en localStorage
-    localStorage.setItem('productos', JSON.stringify(productos));
-    actualizarResumen();
+    try {
+        // Si falla, intentar cargar desde localStorage
+        const productosGuardados = localStorage.getItem('productos');
+        if (productosGuardados) {
+            const data = JSON.parse(productosGuardados);
+            if (data.categorias && Array.isArray(data.categorias)) {
+                productos = data.categorias;
+                return;
+            } else if (Array.isArray(data)) {
+                // Manejar estructura antigua si es necesario
+                const categorias = {};
+                data.forEach(producto => {
+                    const categoria = producto.categoria || 'General';
+                    if (!categorias[categoria]) {
+                        categorias[categoria] = [];
+                    }
+                    categorias[categoria].push({
+                        nombre: producto.nombre,
+                        precio: Number(producto.precio) || 0
+                    });
+                });
+                
+                productos = Object.entries(categorias).map(([nombre, productosCategoria]) => ({
+                    nombre,
+                    productos: productosCategoria
+                }));
+                
+                // Guardar la estructura convertida en localStorage
+                localStorage.setItem('productos', JSON.stringify({ categorias: productos }));
+                return;
+            }
+        }
+    } catch (error) {
+        console.error('Error al cargar productos desde localStorage:', error);
+    }
+    
+    // Si todo falla, usar datos por defecto
+    productos = [{
+        nombre: 'General',
+        productos: [
+            { nombre: 'Producto de ejemplo', precio: 1000 }
+        ]
+    }];
+    
+    // Guardar la estructura por defecto en localStorage
+    localStorage.setItem('productos', JSON.stringify({ categorias: productos }));
 }
 
 function generarBotonesProductos() {
