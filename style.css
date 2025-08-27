@@ -587,3 +587,31 @@ main {
 .pdf-export-mode #detalle-lista li span {
     color: #000000 !important;
 }
+
+/* Estilos para optimizar la impresión en PDF */
+.pdf-export-mode {
+    background-color: #fff; /* Fondo blanco para imprimir */
+    color: #000; /* Texto negro para mejor contraste */
+    padding: 20px;
+}
+
+.pdf-export-mode h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.pdf-export-mode p,
+.pdf-export-mode li {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.pdf-export-mode ul {
+    list-style: none; /* Elimina los puntos si los hay */
+    padding: 0;
+}
+
+.pdf-export-mode li span {
+    display: block; /* Asegura que cada línea ocupe todo el ancho */
+    margin-bottom: 5px;
+}
