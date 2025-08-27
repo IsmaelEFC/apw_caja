@@ -15,7 +15,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="El Campeón">
     <meta name="application-name" content="El Campeón">
-    <meta name="theme-color" content="#3498db">
 </head>
 <body>
     <header>
@@ -27,8 +26,7 @@
         <section id="productos-section" class="card">
             <h2>Seleccionar Producto</h2>
             <div id="categorias-container">
-                <!-- Las categorías se generarán dinámicamente aquí -->
-            </div>
+                </div>
             <button id="agregar-producto-btn" class="btn btn-secondary">Agregar Nuevo Producto</button>
         </section>
 
@@ -37,11 +35,11 @@
             <div class="stats-grid">
                 <div class="stat-item">
                     <span>Efectivo:</span>
-                    <span id="total-efectivo" class="valor">$0.00</span>
+                    <span id="total-efectivo" class="valor">$0</span>
                 </div>
                 <div class="stat-item">
                     <span>Transferencia:</span>
-                    <span id="total-transferencia" class="valor">$0.00</span>
+                    <span id="total-transferencia" class="valor">$0</span>
                 </div>
             </div>
             <div class="button-group">
@@ -55,7 +53,7 @@
     <div class="modal" id="modal-pago">
         <div class="modal-content">
             <span class="close-button" data-modal="modal-pago">&times;</span>
-            <h3>Total a Pagar: <span id="monto-modal" class="valor-modal">$0.00</span></h3>
+            <h3>Total a Pagar: <span id="monto-modal" class="valor-modal">$0</span></h3>
             <p>Seleccione el método de pago:</p>
             <div class="metodos-pago">
                 <button id="pago-efectivo" class="btn btn-success">Efectivo</button>
@@ -71,7 +69,7 @@
             <div class="stats-grid-modal">
                 <div class="stat-item">
                     <span>Total Generado:</span>
-                    <span id="total-generado" class="valor-modal">$0.00</span>
+                    <span id="total-generado" class="valor-modal">$0</span>
                 </div>
             </div>
             <h4>Detalle por Producto</h4>
@@ -95,7 +93,11 @@
                 </div>
                 <div class="form-group">
                     <label for="precio-producto">Precio:</label>
-                    <input type="number" id="precio-producto" step="0.01" min="0" required>
+                    <input type="number" id="precio-producto" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="categoria-producto">Categoría:</label>
+                    <select id="categoria-producto" required></select>
                 </div>
                 <button type="submit" class="btn btn-primary">Guardar Producto</button>
             </form>
@@ -105,10 +107,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        // Función para registrar el Service Worker
         function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
-                // Limpiar caché existente
                 if ('caches' in window) {
                     caches.keys().then(cacheNames => {
                         cacheNames.forEach(cacheName => {
@@ -119,17 +119,14 @@
                     });
                 }
 
-                // Registrar el Service Worker
                 navigator.serviceWorker.register('./sw.js', { scope: './' })
                     .then(registration => {
                         console.log('ServiceWorker registrado con éxito:', registration.scope);
                         
-                        // Forzar actualización en la próxima carga
                         if (registration.waiting) {
                             registration.waiting.postMessage({ type: 'SKIP_WAITING' });
                         }
                         
-                        // Verificar actualizaciones
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             newWorker.addEventListener('statechange', () => {
@@ -140,7 +137,6 @@
                             });
                         });
                         
-                        // Forzar actualización periódica
                         setInterval(() => {
                             registration.update().catch(console.error);
                         }, 60 * 60 * 1000);
@@ -149,7 +145,6 @@
                         console.error('Error al registrar el ServiceWorker:', error);
                     });
 
-                // Escuchar mensajes del Service Worker
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
                     console.log('Nuevo Service Worker tomando el control');
                     window.location.reload();
@@ -157,14 +152,12 @@
             }
         }
 
-        // Registrar el Service Worker cuando el DOM esté listo
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', registerServiceWorker);
         } else {
             registerServiceWorker();
         }
 
-        // Forzar actualización manual si se agrega ?update=1 a la URL
         if (window.location.search.includes('update=1')) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then(registrations => {
