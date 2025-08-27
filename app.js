@@ -372,26 +372,25 @@ async function generarPDFyReiniciar() {
     const today = new Date().toISOString().slice(0, 10);
     const filename = `Reporte_Caja_${today}.pdf`;
 
-    // Comparte el PDF o lo descarga
-    const pdfBlob = pdf.output('blob');
-    if (navigator.share && navigator.canShare({ files: [new File([pdfBlob], filename, { type: 'application/pdf' })] })) {
+    // Lógica para descargar o compartir el PDF
+    if (navigator.share && navigator.canShare({ files: [new File([pdf.output('blob')], filename, { type: 'application/pdf' })] })) {
+        // Opción de compartir para móviles
         try {
             await navigator.share({
-                files: [new File([pdfBlob], filename, { type: 'application/pdf' })],
+                files: [new File([pdf.output('blob')], filename, { type: 'application/pdf' })],
                 title: 'Reporte de Caja',
                 text: 'Aquí está el reporte de cierre de caja.'
             });
-            reiniciarCaja(); // Reinicia la caja después de compartir
+            reiniciarCaja();
         } catch (error) {
             console.error('Error al compartir:', error);
-            // Si falla la compartición, se ofrece la descarga como alternativa
-            pdf.save(filename);
+            alert('No se pudo compartir. El PDF será descargado.');
+            pdf.save(filename); // Fallback de descarga si la compartición falla
             reiniciarCaja();
         }
     } else {
-        // Fallback: Si no se puede compartir, simplemente lo descarga
+        // Opción de descarga para escritorio y navegadores sin 'share'
         pdf.save(filename);
-        alert('Tu navegador no sopporta la función de compartir. El PDF ha sido descargado.');
         reiniciarCaja();
     }
 }
